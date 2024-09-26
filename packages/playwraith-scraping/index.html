@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>URLs</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+    </style>
+    <script type="module">
+      function createURLTable(url = new URL(), template = new Node()) {
+        const tbody = template?.querySelector('tbody');
+        tbody.innerHTML = /* html */ `<tr>
+          <td>origin</td>
+          <td>${url.origin}</td>
+        </tr>
+        <tr>
+          <td>protocol</td>
+          <td>${url.protocol}</td>
+        </tr>
+        <tr>
+          <td>username</td>
+          <td>${url.username}</td>
+        </tr>
+        <tr>
+          <td>password</td>
+          <td>${url.password}</td>
+        </tr>
+        <tr>
+          <td>host</td>
+          <td>${url.host}</td>
+        </tr>
+        <tr>
+          <td>hostname</td>
+          <td>${url.hostname}</td>
+        </tr>
+        <tr>
+          <td>port</td>
+          <td>${url.port}</td>
+        </tr>
+        <tr>
+          <td>pathname</td>
+          <td>${url.pathname}</td>
+        </tr>
+        <tr>
+          <td>search</td>
+          <td>${url.search}</td>
+        </tr>
+        <tr>
+          <td>hash</td>
+          <td>${url.hash}</td>
+        </tr>
+        <tr>
+          <td>href</td>
+          <td>${url.href}</td>
+        </tr>`;
+      }
+      function updateUI(obj = {}, title = '') {
+        const main = document.querySelector('main');
+        const template = document
+          .querySelector('template')
+          ?.content.cloneNode(true);
+        template.querySelector('h2').textContent = title;
+        obj instanceof URL && createURLTable(obj, template);
+        main.replaceChildren(template);
+      }
+      function* main() {
+        // Crear una nueva URL y mostrar sus partes básicas
+        const url = new URL('https://example.com/app');
+        console.table(url);
+        updateUI(url, 'Crear una nueva URL y mostrar sus partes básicas');
+
+        let continuar = yield dialog.show();
+        // let continuar = yield confirm(
+        //   'Continuar con:\n\tAñadir "query params"'
+        // );
+        if (!continuar) return;
+
+        // Añadir parámetros de búsqueda (query params)
+        url.searchParams.set(
+          'customer_name',
+          encodeURIComponent('Celia Molina')
+        );
+        url.searchParams.set('customer_id', crypto.randomUUID());
+        /**
+         *  Es bueno que utilices `encodeURIComponent` al agregar parámetros a la URL para evitar problemas con caracteres especiales.
+         * Sin embargo, `URLSearchParams.set()` ya se encarga del escape de caracteres por defecto, por lo que podrías simplificar esa parte.
+         */
+        console.table(url);
+        updateUI(url, 'Añadir parámetros de búsqueda (query params)');
+
+        continuar = yield;
+        // continuar = yield confirm(
+        //   'Continuar con:\n\tAñadir "query params" desde un objeto'
+        // );
+        if (!continuar) return;
+
+        // Añadir parámetros de búsqueda (query params) desde un objeto
+        const agent = {
+          id: crypto.randomUUID(),
+          name: 'David Llopis',
+        };
+        Object.entries(agent).forEach(([key, val]) =>
+          url.searchParams.set(`agent_${key}`, val)
+        );
+        console.table(url);
+
+        continuar = yield;
+        // continuar = yield confirm(
+        //   'Continuar con:\n\tAñadir "query params" desde un Map'
+        // );
+        if (!continuar) return;
+
+        // Añadir parámetros de búsqueda (query params) desde un Map
+        const session = new Map()
+          .set('id', crypto.randomUUID())
+          .set('timeLog', Date.now())
+          .forEach((val, key) => url.searchParams.set(`session_${key}`, val));
+        console.table(url);
+
+        continuar = yield;
+        // continuar = yield confirm(
+        //   'Continuar con:\n\tConvertir URLSearchParams en un objeto plano'
+        // );
+        if (!continuar) return;
+
+        // Convertir URLSearchParams en un objeto plano
+        const paramsObj = Array.from(url.searchParams, ([key, val]) => ({
+          [key]: decodeURIComponent(val),
+        })).reduce((acc, param) => ({ ...acc, ...param }), {});
+        console.table(paramsObj);
+
+        continuar = yield;
+        // continuar = yield confirm(
+        //   'Continuar con:\n\tConvertir URLSearchParams en un Map'
+        // );
+        if (!continuar) return;
+
+        // Convertir y decodificar URLSearchParams en un objeto Map
+        const paramsMap = new Map(url.searchParams);
+        paramsMap.forEach((value, key, map) =>
+          map.set(key, decodeURIComponent(value))
+        );
+        console.log(paramsMap);
+
+        continuar = yield;
+        // continuar = yield confirm(
+        //   'Continuar con:\n\tDecodificación directa al obtener valores'
+        // );
+        if (!continuar) return;
+
+        // Decodificación directa al obtener valores
+        const decodedParamsObj = {};
+        url.searchParams.forEach((value, key) => {
+          decodedParamsObj[key] = decodeURIComponent(value);
+        });
+        console.table(decodedParamsObj);
+
+        const decodedParamsMap = new Map();
+        url.searchParams.forEach((value, key) => {
+          decodedParamsMap.set(key, decodeURIComponent(value));
+        });
+        console.log(decodedParamsMap);
+
+        const encodeURLParams = (url, paramsObj) => {
+          const updatedURL = url instanceof URL ? url : new URL(url);
+          Object.entries(paramsObj).forEach(([key, val]) =>
+            updatedURL.searchParams.set(key, val)
+          );
+          return updatedURL;
+        };
+        const decodeURLParams = (url) =>
+          (url instanceof URL ? url : new URL(url)).searchParams
+            .entries()
+            .reduce(
+              (acc, [key, value]) => ({
+                ...acc,
+                [key]: decodeURIComponent(value),
+              }),
+              {}
+            );
+      }
+      const delay = (ms = 100) =>
+        new Promise((reject) => setTimeout(reject, ms));
+      const flow = main();
+      const dialog = document.querySelector('dialog');
+      const menuBtns = dialog.querySelectorAll('menu > button');
+      let step = flow.next(); // Este bucle avanza a través de los pasos del generador.
+      // while (!step.done) step = flow.next(step.value); // 'step.value' contiene el resultado del 'yield' (el valor de 'confirm')
+      menuBtns.forEach((btn) =>
+        btn.addEventListener('click', async ({ target }) => {
+          dialog.close();
+          step = flow.next(target.value);
+          if (step.done) return;
+          await delay(10000);
+          dialog.show();
+        })
+      );
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>Tutorial URLs</h1>
+    </header>
+    <main></main>
+    <template>
+      <section>
+        <header>
+          <h2>Título de sección</h2>
+        </header>
+        <p></p>
+        <pre><code></code></pre>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Clave</th>
+              <th scope="col">Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </template>
+    <dialog>
+      <h3>Siguiente lección</h3>
+      <p></p>
+      <menu>
+        <button type="button" value="true">Continuar</button>
+        <button type="button" value="">Finalizar</button>
+      </menu>
+    </dialog>
+  </body>
+</html>

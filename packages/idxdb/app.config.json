@@ -1,0 +1,9 @@
+{
+  "database": {
+    "name": "auth",
+    "stores": {
+      "users": "users",
+      "credentials": "credentials"
+    }
+  }
+}

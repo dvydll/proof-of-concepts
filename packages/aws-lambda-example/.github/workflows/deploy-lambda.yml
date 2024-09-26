@@ -1,0 +1,44 @@
+name: Deploy Lambda to AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Node.js (modifica la versión si es necesario)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Install dependencies (opcional, si tu Lambda usa Node.js y tienes package.json)
+      - name: Install dependencies
+        run: npm install
+
+      # Zip the Lambda function code (modifica según tu estructura de archivos)
+      - name: Zip Lambda function
+        run: zip -r aws-lambda-example.zip .
+
+      # Configure AWS credentials using GitHub Secrets
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-3 # Cambia la región según tu configuración
+
+      # Deploy the Lambda function
+      - name: Deploy Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name aws-lambda-example \
+            --zip-file fileb://aws-lambda-example.zip

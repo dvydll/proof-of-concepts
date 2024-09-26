@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Custom Element con Ace Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"
+      defer
+    ></script>
+    <script type="module" src="main.js"></script>
+  </head>
+  <body>
+    <!-- Usa el custom element -->
+    <ace-editor
+      theme="monokai"
+      language="javascript"
+      value="console.log('Hola, mundo!');"
+    ></ace-editor>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+/* Asegúrate de que el contenedor del editor tenga un tamaño adecuado */
+ace-editor {
+  display: block; /* Asegúrate de que el custom element se comporta como un bloque */
+  width: 100dvw;
+  height: 100dvh; /* Ajusta la altura según sea necesario */
+}

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Infinite scroll pagination</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+          sans-serif;
+      }
+      .user-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 16px;
+      }
+      .user-card {
+        width: 200px;
+        padding: 16px;
+        border: 1px solid #6a3ac4;
+        border-radius: 8px;
+        background-color: #6a3ac481;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .user-card h3 {
+        margin: 0 0 8px 0;
+      }
+      .loading {
+        text-align: center;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+    </style>
+    <script type="module">
+      class Identificable {
+        constructor(id) {
+          this.id = id ?? crypto.randomUUID();
+        }
+      }
+
+      class User extends Identificable {
+        constructor(name, age, married, id = null) {
+          super(id);
+          this.name = name;
+          this.age = age;
+          this.married = married;
+        }
+      }
+
+      class Collection extends Map {
+        constructor(items = []) {
+          super(items.map((item) => [item.id ?? crypto.randomUUID(), item]));
+        }
+
+        /**
+         * Método para obtener la paginación
+         */
+        getPagination(pageSize = 10) {
+          return new Pagination([...this.values()], pageSize);
+        }
+      }
+
+      const Pagination = globalThis.Iterator
+        ? class Pagination extends Iterator {
+            constructor(items, pageSize) {
+              super();
+              this.items = items;
+              this.pageSize = pageSize;
+              this.currentPage = 0; // Página actual
+            }
+
+            /**
+             * Método next() que maneja la lógica de la iteración
+             */
+            next() {
+              const totalPages = Math.ceil(this.items.length / this.pageSize);
+
+              // Early return si ya terminamos de iterar
+              if (this.currentPage >= totalPages) return { done: true };
+
+              // Obtener los usuarios de la página actual
+              const start = this.currentPage * this.pageSize;
+              const end = start + this.pageSize;
+              const page = this.items.slice(start, end);
+              this.currentPage++; // Avanzamos a la siguiente página
+              return { value: page, done: false };
+            }
+          }
+        : class Pagination {
+            constructor(items, pageSize) {
+              this.items = items;
+              this.pageSize = pageSize;
+              this.currentPage = 0; // Página actual
+            }
+
+            /**
+             * No necesario al heredar de Iterator
+             */
+            [Symbol.iterator]() {
+              this.currentPage = 0;
+              return this;
+            }
+
+            /**
+             * Método next() que maneja la lógica de la iteración
+             */
+            next() {
+              const totalPages = Math.ceil(this.items.length / this.pageSize);
+
+              // Early return si ya terminamos de iterar
+              if (this.currentPage >= totalPages) return { done: true };
+
+              // Obtener los usuarios de la página actual
+              const start = this.currentPage * this.pageSize;
+              const end = start + this.pageSize;
+              const page = this.items.slice(start, end);
+              this.currentPage++; // Avanzamos a la siguiente página
+              return { value: page, done: false };
+            }
+          };
+
+      // Ejemplo de uso
+      const [user, ...users] = Array.from(
+        { length: 500 },
+        (_, i) =>
+          new User(
+            `User ${i + 1}`,
+            Math.ceil(Math.random() * 100),
+            Math.random() >= 0.5
+          )
+      );
+      const pageSize = 20;
+      const userCollection = new Collection(users);
+      userCollection.set(user.id, user);
+      const pagination = userCollection.getPagination(pageSize);
+      // console.log(userCollection.get(user.id));
+      // let idx = 1;
+      // for (const page of pagination) {
+      //   console.log(`Pagina ${idx}`);
+      //   console.log(page); // Imprime cada página de usuarios
+      //   idx++;
+      // }
+
+      // Obtener el contenedor de las tarjetas de usuarios
+      const userContainer = document.getElementById('user-container');
+      const loadingIndicator = document.getElementById('loading');
+
+      // Función para crear una tarjeta de usuario
+      function createCard(user) {
+        const card = document.createElement('div');
+        card.classList.add('user-card');
+        card.innerHTML = /* html */ `
+          <h3>${user.name}</h3>
+          <p>Age: ${user.age}</p>
+          <p>Married: ${user.married ? 'Yes' : 'No'}</p>`;
+        return card;
+      }
+
+      // Función para cargar un nuevo paquete de usuarios
+      let pageIdx = 1;
+      function loadMoreItems() {
+        const { value: page, done } = pagination.next();
+        if (done) {
+          loadingIndicator.textContent = 'No more items';
+          observer.unobserve(loadingIndicator); // Deja de observar el elemento cuando no hay más datos
+          return;
+        }
+        console.log(`Página ${pageIdx}`);
+        console.table(page);
+        const fragment = document.createDocumentFragment();
+        page.forEach((item) => {
+          const card = createCard(item);
+          fragment.appendChild(card);
+        });
+        userContainer.appendChild(fragment);
+        pageIdx++;
+      }
+
+      // Configurar IntersectionObserver para cargar más usuarios cuando el usuario haga scroll al final
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          // Si el elemento 'loading' es visible, cargar más usuarios
+          if (entry.isIntersecting) loadMoreItems();
+        },
+        {
+          root: null, // El viewport completo es el área de observación
+          threshold: 0.5, // Cargar más usuarios cuando se vea al menos el 50% del indicador de carga
+        }
+      );
+
+      // Empezar a observar el elemento 'loading'
+      observer.observe(loadingIndicator);
+
+      // Cargar el primer paquete de usuarios al cargar la página
+      loadMoreItems();
+    </script>
+  </head>
+  <body>
+    <div class="user-container" id="user-container">
+      <!-- User cards will be appended here -->
+    </div>
+    <div class="loading" id="loading">Loading more users...</div>
+  </body>
+</html>

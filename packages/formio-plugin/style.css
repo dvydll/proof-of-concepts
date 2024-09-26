@@ -1,0 +1,14 @@
+:root {
+  color-scheme: dark light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+}

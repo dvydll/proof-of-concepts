@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js" defer></script>
+</head>
+
+<body>
+
+  <div data-component="carousel">
+    <ul class="entries" tabindex="0">
+      <li>
+        <a name="carousel_01">
+          <img src="../shared/img/matroshka-01.svg" alt="" title="" width="222" height="184" draggable="false">
+        </a>
+      </li>
+      …
+    </ul>
+    <ul class="markers">
+      <li>
+        <a href="#carousel_01">
+          <span class="sr-only">Photo 1</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <ul id="list-view">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+  </ul>
+
+  <button style="anchor-name: --anchor;" popovertarget="popover">
+    <p aria-hidden="true">?</p>
+  </button>
+
+  <div id="popover" class="popover" style="anchor-name: --anchor;" popover>
+    <p>Contenido del tooltip</p>
+  </div>
+
+  <menu type="toolbar">
+    <button type="button" id="post-user">Crear usuario</button>
+    <button type="button" id="get-user">Ver usuario</button>
+  </menu>
+
+</body>
+
+</html>
