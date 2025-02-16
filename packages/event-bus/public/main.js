@@ -1,72 +1,37 @@
-import { $, dateTimeFormatter } from '../helpers/index.js';
+import { $, publishEvent, pushMessage } from '../helpers/index.js';
 import EventBus from '../index.js';
 import { MessagePayload } from '../models/dto/MessagePayload.js';
 
+// ------------------------------
+// Variables globales
+// ------------------------------
 const ACCEPTED_IFRAME_ORIGIN = 'http://localhost:5500';
-const ACCEPTED_EVENT_NAMES = ['messageToIframe', 'messageToTop'];
 
-const eventBus = new EventBus();
-
+// DOM
 const $form = /** @type {HTMLFormElement} */ ($('form'));
 const $messageInput = /** @type {HTMLInputElement} */ (
 	$('[name="message"]', $form)
 );
 const $iframe = /** @type {HTMLIFrameElement} */ ($('iframe'));
-const $dl = $('dl');
+const $dl = /** @type {HTMLDListElement} */ ($('dl'));
 const $dlTemplate = /** @type {HTMLTemplateElement} */ ($('#dlEntryTemplate'));
 
+// EventBus
 /**
- *
- * @param {*} EventPayload
+ * @type {Map<string, (event: CustomEvent) => void>}
  */
-function pushMessage({ message, timestamp, traceId, from }) {
-	const $dlEntry = /** @type {HTMLElement} */ (
-		$dlTemplate.content.cloneNode(true)
-	);
-	const $dlEntryTerm = $('dt', $dlEntry);
-	const $dlEntryDesc = $('dd', $dlEntry);
-	const $article = document.createElement('article');
-	$dlEntryTerm?.setAttribute('data-trace-id', traceId);
-	$dlEntryTerm?.setAttribute('data-timestamp', timestamp);
-	$dlEntryDesc?.setAttribute('data-from', from);
-	$dlEntryTerm?.insertAdjacentText('afterbegin', traceId);
-	$('small', $dlEntryTerm ?? document)?.insertAdjacentText(
-		'beforeend',
-		dateTimeFormatter.format(new Date(timestamp))
-	);
-	$dlEntryDesc?.insertAdjacentText('beforeend', message);
-	$article?.appendChild($dlEntry);
-	$dl?.insertAdjacentElement('afterbegin', $article);
-}
-
-// Escuchar eventos del iframe
-window.self.addEventListener('message', (event) => {
-	// Asegura que venga del iframe
-	if (event.origin !== ACCEPTED_IFRAME_ORIGIN) return;
-
-	const { eventName, payload } = event.data;
-	if (!ACCEPTED_EVENT_NAMES.includes(eventName)) return;
-
-	console.debug('[top-frame]', { eventName, payload });
-	eventBus.emit(eventName, payload);
-});
-
-ACCEPTED_EVENT_NAMES.forEach((eventName) => {
-	// Enviar eventos al iframe
-	eventBus.on(eventName, (event) => {
-		if (event.type === 'messageToTop') return pushMessage(event.detail);
-		$iframe?.contentWindow?.postMessage(
-			{
-				eventName: event.type,
-				payload: event.detail,
-			},
-			ACCEPTED_IFRAME_ORIGIN
-		);
-	});
-});
+const eventHandlers = new Map();
+eventHandlers.set('toTop/message', ({ detail }) =>
+	pushMessage($dlTemplate, $dl, detail)
+);
+eventHandlers.set(
+	'toIframe/message',
+	publishEvent(ACCEPTED_IFRAME_ORIGIN, $iframe.contentWindow)
+);
+const eventBus = new EventBus(ACCEPTED_IFRAME_ORIGIN, eventHandlers);
 
 // Ejemplo: enviar mensaje al iframe
 $form?.addEventListener('submit', (event) => {
 	event.preventDefault();
-	eventBus.emit('messageToIframe', new MessagePayload($messageInput?.value));
+	eventBus.emit('toIframe/message', new MessagePayload($messageInput?.value));
 });
