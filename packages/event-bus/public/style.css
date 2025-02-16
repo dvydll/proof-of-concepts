@@ -1,0 +1,143 @@
+:root {
+	--color-primary: #007bff;
+	--color-secondary: #6c757d;
+	--color-success: #28a745;
+	--color-info: #17a2b8;
+	--color-warning: #ffc107;
+	--color-danger: #dc3545;
+	--color-light: #f8f9fa;
+	--color-dark: #343a40;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-success) var(--color-dark);
+}
+
+html,
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	background-color: var(--color-light);
+	color: var(--color-dark);
+}
+
+h1,
+h2 {
+	font-size: 2.1rem;
+	font-weight: 700;
+	text-align: center;
+
+	&:is(h2) {
+		margin-block: 0;
+	}
+}
+
+main {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+
+	> section {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+
+		background-color: var(--color-dark);
+		color: var(--color-light);
+
+		border-radius: 10px;
+		border: 0.33rem solid var(--color-success);
+
+		> dl {
+			padding: 1rem;
+			margin: 0;
+			flex: 80 1 0;
+			display: flex;
+			overflow-y: auto;
+			scroll-behavior: smooth;
+
+			flex-direction: column-reverse;
+			gap: 1rem;
+
+			& dt {
+				color: var(--color-success);
+				font-size: 0.7rem;
+
+				&::before {
+					content: 'ID: ';
+					color: var(--color-secondary);
+				}
+
+				> small {
+					margin-inline-start: 0.5rem;
+					font-size: 0.8rem;
+					color: var(--color-secondary);
+				}
+			}
+
+			& dd {
+				color: var(--color-light);
+				font-weight: 600;
+				font-size: 1.1rem;
+
+				&::before {
+					content: attr(data-from) ' dice:';
+					font-size: 0.8rem;
+					color: var(--color-secondary);
+					margin-inline-end: 0.5rem;
+				}
+			}
+		}
+	}
+}
+
+iframe {
+	width: 50dvw;
+	height: 80dvh;
+	border: 0.33rem solid var(--color-info);
+	border-radius: 10px;
+}
+
+form {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: center;
+
+	label {
+		height: 100%;
+		flex: 80 1 0;
+
+		> span {
+			display: none;
+		}
+
+		> input {
+			border-top: 0.33rem solid var(--color-success);
+			border-radius: 0 0 0 0.25rem;
+			padding-inline: 0.5rem;
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	& button {
+		flex: 20;
+		padding: 0.5rem 1rem;
+		border: none;
+		border-radius: 0 0 0.25rem 0;
+		background-color: var(--color-success);
+		color: var(--color-light);
+		cursor: pointer;
+		transition: background-color 0.2s ease-in-out;
+
+		&:hover {
+			background-color: var(--color-secondary);
+		}
+	}
+}

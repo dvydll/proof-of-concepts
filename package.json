@@ -1,11 +1,42 @@
 {
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "devDependencies": {
-    "@eslint/js": "^9.11.1",
-    "eslint": "^9.11.1",
-    "globals": "^15.9.0"
-  }
+	"name": "proof-of-concepts",
+	"version": "1.0.0",
+	"description": "Pruebas de conceptos diversos de JS",
+	"main": "index.js",
+	"type": "module",
+	"imports": {
+		"#*": "./packages/*"
+	},
+	"engines": {
+		"node": ">=22.x"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dvydll/proof-of-concepts.git"
+	},
+	"keywords": [],
+	"author": "DvydLL <dvydll@gmail.com> (https://github.com/dvydll)",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/dvydll/proof-of-concepts/issues"
+	},
+	"homepage": "https://github.com/dvydll/proof-of-concepts#readme",
+	"devDependencies": {
+		"@eslint/js": "^9.11.1",
+		"eslint": "^9.11.1",
+		"globals": "^15.9.0"
+	},
+	"volta": {
+		"node": "22.14.0"
+	},
+	"dependencies": {
+		"event-bus": "^1.0.0"
+	}
 }

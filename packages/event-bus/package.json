@@ -1,0 +1,21 @@
+{
+	"name": "event-bus",
+	"version": "1.0.0",
+	"main": "index.js",
+	"type": "module",
+	"exports": {
+		"import": "./index.js",
+		"types": "./index.d.ts"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"types": "./index.d.ts",
+	"description": "",
+	"dependencies": {
+		"event-bus": "file:"
+	}
+}

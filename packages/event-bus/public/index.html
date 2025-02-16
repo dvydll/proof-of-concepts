@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>EventBus</title>
+		<link rel="stylesheet" href="style.css" />
+		<script type="module" src="main.js"></script>
+	</head>
+	<body>
+		<h1>EventBus PoC</h1>
+		<main>
+			<section>
+				<h2>Parent</h2>
+				<dl></dl>
+				<form>
+					<label>
+						<span>Message</span>
+						<input
+							type="text"
+							name="message"
+							placeholder="Type any message..."
+						/>
+					</label>
+					<button>Send message</button>
+				</form>
+			</section>
+
+			<iframe src="pages/index.html"></iframe>
+		</main>
+
+		<template id="dlEntryTemplate">
+			<dt><small></small></dt>
+			<dd></dd>
+		</template>
+	</body>
+</html>

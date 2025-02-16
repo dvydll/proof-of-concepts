@@ -1,0 +1,120 @@
+:root {
+	--color-primary: #007bff;
+	--color-secondary: #6c757d;
+	--color-success: #28a745;
+	--color-info: #17a2b8;
+	--color-warning: #ffc107;
+	--color-danger: #dc3545;
+	--color-light: #f8f9fa;
+	--color-dark: #343a40;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-info) var(--color-dark);
+}
+
+html,
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	background-color: var(--color-dark);
+	color: var(--color-light);
+	height: 100%;
+	margin: 0;
+}
+
+h1 {
+	margin-block: 0;
+	text-align: center;
+}
+
+main {
+	display: flex;
+	flex-flow: column nowrap;
+	gap: 1rem;
+	height: 100%;
+
+	> dl {
+		padding: 1rem;
+		margin: 0;
+		flex: 80 1 0;
+		display: flex;
+		overflow-y: auto;
+		scroll-behavior: smooth;
+
+		flex-direction: column-reverse;
+		gap: 1rem;
+
+		& dt {
+			color: var(--color-info);
+			font-size: 0.7rem;
+
+			&::before {
+				content: 'ID: ';
+				color: var(--color-secondary);
+			}
+
+			> small {
+				margin-inline-start: 0.5rem;
+				font-size: 0.8rem;
+				color: var(--color-secondary);
+			}
+		}
+
+		& dd {
+			color: var(--color-light);
+			font-weight: 600;
+			font-size: 1.1rem;
+
+			&::before {
+				content: attr(data-from) ' dice:';
+				font-size: 0.8rem;
+				color: var(--color-secondary);
+				margin-inline-end: 0.5rem;
+			}
+		}
+	}
+
+	> form {
+		display: flex;
+		flex-flow: row nowrap;
+		align-items: center;
+		justify-content: center;
+
+		label {
+			height: 100%;
+			flex: 80 1 0;
+
+			> span {
+				display: none;
+			}
+
+			> input {
+				border-top: 0.33rem solid var(--color-info);
+				border-radius: 0 0 0 0.25rem;
+				padding-inline: 0.5rem;
+				height: 100%;
+				width: 100%;
+			}
+		}
+
+		& button {
+			flex: 20;
+			padding: 0.5rem 1rem;
+			border: none;
+			border-radius: 0 0 0.25rem 0;
+			background-color: var(--color-info);
+			color: var(--color-light);
+			cursor: pointer;
+			transition: background-color 0.2s ease-in-out;
+
+			&:hover {
+				background-color: var(--color-secondary);
+			}
+		}
+	}
+}
