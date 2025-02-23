@@ -1,14 +1,15 @@
 {
 	"compilerOptions": {
-		"module": "esnext",
+		"module": "NodeNext",
 		"target": "esnext",
+		"moduleResolution": "nodenext",
 		"checkJs": true,
 		"strict": true,
 		"noEmit": true,
 		"lib": ["esnext", "dom", "WebWorker"],
 		"baseUrl": ".",
 		"paths": {
-			"#*": ["./packages/*"],
+			"#/*": ["./packages/*"],
 			"event-bus": ["./packages/event-bus/index.js"]
 		}
 	},

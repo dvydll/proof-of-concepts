@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"type": "module",
 	"imports": {
-		"#*": "./packages/*"
+		"#/*": "./packages/*"
 	},
 	"engines": {
 		"node": ">=22.x"
@@ -37,6 +37,7 @@
 		"node": "22.14.0"
 	},
 	"dependencies": {
-		"event-bus": "^1.0.0"
+		"event-bus": "^1.0.0",
+		"vitest": "^3.0.6"
 	}
 }

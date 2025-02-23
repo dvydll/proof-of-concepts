@@ -34,7 +34,7 @@ wss.on('connection', (ws) => {
 	ws.on('message', (message) => {
 		console.log('Mensaje del cliente: %s', message);
 		try {
-			const data = JSON.parse(message);
+			const data = JSON.parse(message.toString('utf-8'));
 			if (data.time) {
 				const response = update(data);
 
@@ -50,7 +50,7 @@ wss.on('connection', (ws) => {
 
 	// Evento que se ejecuta cuando la conexión se cierra
 	ws.on('close', (event) => {
-		console.log('Cliente desconectado', event);
+		console.info('Cliente desconectado', event);
 	});
 
 	// Evento que se ejecuta cuando ocurre un error
