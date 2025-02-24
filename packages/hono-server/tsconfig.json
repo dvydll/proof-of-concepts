@@ -1,13 +1,13 @@
 {
 	"extends": ["../../tsconfig.json"],
 	"compilerOptions": {
-		"outDir": "./packages/api/dist",
-		"moduleResolution": "nodenext",
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"allowJs": true,
-		"target": "ESNext",
-		"module": "NodeNext",
 		"strict": true,
+		"outDir": "./packages/api/dist",
 		"verbatimModuleSyntax": true,
 		"skipLibCheck": true,
 		"types": ["node"],

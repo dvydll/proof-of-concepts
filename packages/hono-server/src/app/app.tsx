@@ -3,13 +3,16 @@ import type { Pokemon } from '#/hono-server/src/app/schemas/pokemon.d.ts';
 import type { RickAndMortyByName } from '#/hono-server/src/app/schemas/rick-and-morty.d.ts';
 import type { StatusCode } from 'hono/utils/http-status';
 
-import { Layout } from '#/hono-server/src/app/components/Layout.js';
-import { PostTable } from '#/hono-server/src/app/components/PostTable.js';
-import { Welcome } from '#/hono-server/src/app/components/Welcome.js';
+import { Layout } from '#/hono-server/src/app/components/Layout';
+import { PostTable } from '#/hono-server/src/app/components/PostTable';
+import { Welcome } from '#/hono-server/src/app/components/Welcome';
+import { BadStatusPage } from '#/hono-server/src/app/pages/BadStatusPage';
+import { ErrorPage } from '#/hono-server/src/app/pages/ErrorPage';
 import { Hono } from 'hono';
 import { logger } from 'hono/logger';
 
 const app = new Hono();
+const jsonPlaceholderUrl = new URL('https://jsonplaceholder.typicode.com');
 
 app.use(logger());
 
@@ -22,8 +25,12 @@ app.get('/', (c) => {
 });
 
 app.get('/posts', async (c) => {
+	const userId = c.req.query('userId');
+	const postsUrl = new URL('/posts', jsonPlaceholderUrl.origin);
+	if (userId) postsUrl.searchParams.set('userId', userId);
+
 	try {
-		const response = await fetch(`https://jsonplaceholder.typicode.com/posts`);
+		const response = await fetch(postsUrl);
 
 		if (!response.ok)
 			throw new Error('Something went wrong', { cause: response });
@@ -43,28 +50,43 @@ app.get('/posts', async (c) => {
 	} catch (error) {
 		if (error instanceof Error && error.cause) {
 			c.status((error.cause as Response).status as StatusCode);
-			return c.html(
-				<Layout>
-					<header>
-						<h1 class={'text-center text-3xl'}>
-							Error {(error.cause as Response).status}:{' '}
-							{(error.cause as Response).statusText}
-						</h1>
-						<pre>{error.message}</pre>
-					</header>
-				</Layout>
-			);
+			return c.html(<BadStatusPage response={error.cause as Response} />);
 		}
 
-		c.status(500);
+		return c.html(<ErrorPage cause={error} />, 500);
+	}
+});
+
+app.get('/posts/:id', async (c) => {
+	const postId = c.req.param('id');
+	const postsUrl = new URL('/posts', jsonPlaceholderUrl.origin);
+	postsUrl.searchParams.set('id', postId);
+
+	try {
+		const response = await fetch(postsUrl);
+
+		if (!response.ok)
+			throw new Error('Something went wrong', { cause: response });
+
+		const posts: Post[] = await response.json();
+
 		return c.html(
 			<Layout>
 				<header>
-					<h1>Internal Server Error</h1>
-					<pre>{JSON.stringify(error, null, 2)}</pre>
+					<h1 class='text-center text-3xl'>Posts</h1>
 				</header>
+				<main>
+					<PostTable posts={posts} />
+				</main>
 			</Layout>
 		);
+	} catch (error) {
+		if (error instanceof Error && error.cause) {
+			c.status((error.cause as Response).status as StatusCode);
+			return c.html(<BadStatusPage response={error.cause as Response} />);
+		}
+
+		return c.html(<ErrorPage cause={error} />, 500);
 	}
 });
 
@@ -99,28 +121,10 @@ app.get('/pokemon/:name', async (c) => {
 	} catch (error) {
 		if (error instanceof Error && error.cause) {
 			c.status((error.cause as Response).status as StatusCode);
-			return c.html(
-				<Layout>
-					<header>
-						<h1 class={'text-center text-3xl'}>
-							Error {(error.cause as Response).status}:{' '}
-							{(error.cause as Response).statusText}
-						</h1>
-						<pre>{error.message}</pre>
-					</header>
-				</Layout>
-			);
+			return c.html(<BadStatusPage response={error.cause as Response} />);
 		}
 
-		c.status(500);
-		return c.html(
-			<Layout>
-				<header>
-					<h1>Internal Server Error</h1>
-					<pre>{JSON.stringify(error, null, 2)}</pre>
-				</header>
-			</Layout>
-		);
+		return c.html(<ErrorPage cause={error} />, 500);
 	}
 });
 
@@ -150,11 +154,12 @@ app.get('/rick-and-morty/:name', async (c) => {
 			</Layout>
 		);
 	} catch (error) {
-		return c.html(
-			<Layout>
-				<Welcome name={name} />
-			</Layout>
-		);
+		if (error instanceof Error && error.cause) {
+			c.status((error.cause as Response).status as StatusCode);
+			return c.html(<BadStatusPage response={error.cause as Response} />);
+		}
+
+		return c.html(<ErrorPage cause={error} />, 500);
 	}
 });
 

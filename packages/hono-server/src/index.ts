@@ -5,6 +5,7 @@ import { loadEnvFile } from 'node:process';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { Hono } from 'hono';
+import { poweredBy } from 'hono/powered-by';
 
 // Importación de componentes y utilidades
 import api from '#/hono-server/src/api/index.js';
@@ -24,6 +25,8 @@ try {
 const { PORT = 3000 } = process.env;
 
 const server = new Hono();
+
+server.use(poweredBy());
 
 app.use('/assets/*', serveStatic({ root: '.' }));
 

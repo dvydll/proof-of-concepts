@@ -16,7 +16,7 @@ html {
 body {
 	margin: 0;
 	padding: 0;
-	height: 100dvh;
+	min-height: 100dvh;
 }
 
 body {
@@ -27,15 +27,31 @@ body {
 	align-items: center;
 
 	> header {
-		--color-background: #f8f9fa;
-		--color-text: #1d1d1d;
+		--color-light: #f8f9fa;
+		--color-dark: #1d1d1d;
 
-		width: 100dvw;
+		container-type: scroll-state;
+
 		position: sticky;
 		top: 0;
 
-		color: var(--color-text);
-		background-color: var(--color-background);
+		width: 100%;
+
+		> h1 {
+			color: var(--color-light);
+			background-color: var(--color-dark);
+
+			margin: 0;
+			padding-block: 0.5rem;
+			padding-inline: 5rem;
+
+			transition: color, background-color 0.3s ease-in-out;
+
+			@container scroll-state(stuck: top) {
+				background-color: transparent;
+				backdrop-filter: blur(2px);
+			}
+		}
 	}
 
 	> main {

@@ -19,7 +19,9 @@ export const PostTable: FC<Props> = ({ posts }) => {
 			<tbody>
 				{posts.map((post) => (
 					<tr key={post.id}>
-						<td>{post.id}</td>
+						<td>
+							<a href={`/posts/${post.id}`}>{post.id}</a>
+						</td>
 						<td>{post.userId}</td>
 						<td>{post.title}</td>
 						<td>{post.body}</td>
